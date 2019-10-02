@@ -1,6 +1,7 @@
 """
 Tests for pulp
 """
+from sys import version_info
 from .pulp import *
 
 def dumpTestProblem(prob):
@@ -503,6 +504,29 @@ def pulpTest100(solver):
                   sol = {x:0, y:1},
                   status = status)
 
+def pulpTest101(solver):
+    """
+    Test the timing out of sequentialSolve()
+    """
+    # set up a cubic feasible region
+    prob = LpProblem("test101", LpMinimize)
+    x = LpVariable("x", 0, 1)
+    y = LpVariable("y", 0, 1)
+    z = LpVariable("z", 0, 1)
+
+    obj1 = x+0*y+0*z
+    obj2 = 0*x-1*y+0*z
+    prob += x <= 1, "c1"
+
+    if solver.__class__ in [PULP_CBC_CMD] and version_info >= (3, 3):
+        print("\t Testing CBC Timeout (python >= 3.3)")
+        from subprocess import TimeoutExpired
+        try:
+            status = prob.sequentialSolve([obj1,obj2], solver = solver, processTimeout=0)
+            assert False, 'This should not have been executed'
+        except TimeoutExpired:
+            pass
+
 def pulpTest110(solver):
     """
     Test the ability to use fractional constraints
@@ -623,6 +647,7 @@ def pulpTestSolver(solver, msg = 0):
             pulpTest080,
             pulpTest090,
             pulpTest100,
+            pulpTest101,
             pulpTest110,
             pulpTest120, pulpTest121, pulpTest122, pulpTest123
             ]
