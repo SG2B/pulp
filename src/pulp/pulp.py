@@ -1682,7 +1682,7 @@ class LpProblem(object):
         return status
 
     def sequentialSolve(self, objectives, absoluteTols = None,
-                        relativeTols = None, solver = None, debug = False, processTimeout = None):):
+                        relativeTols = None, solver = None, debug = False, processTimeout = None):
         """
         Solve the given Lp problem with several objective functions.
 
