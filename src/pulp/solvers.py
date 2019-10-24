@@ -1570,8 +1570,12 @@ class COIN_CMD(LpSolver_CMD):
         with open(filename) as f:
             statusstrs = f.readline().split()
 
-        status = cbcStatus.get(statusstrs[0], LpStatusUndefined)
-        sol_status = cbcSolStatus.get(statusstrs[0], LpSolutionNoSolutionFound)
+        try:
+            status = cbcStatus.get(statusstrs[0], LpStatusUndefined)
+            sol_status = cbcSolStatus.get(statusstrs[0], LpSolutionNoSolutionFound)
+        except IndexError:
+            status = LpSolutionInfeasible
+            sol_status = LpSolutionInfeasible
         # here we could use some regex expression.
         # Not sure what's more desirable
         if status == LpStatusNotSolved and len(statusstrs) >= 5:
